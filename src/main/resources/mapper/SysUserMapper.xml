@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.myself.study.dao.SysUserMapper">
+  
+  <!--自定义方法-->
+  <insert id="addUserByMd5">
+    insert into sys_user (user_name,password,salt) values (#{userName},#{password},#{salt})
+  </insert>
+  
+  <insert id="addUserByNormal">
+    insert into sys_user (user_name,password) values (#{userName},#{password})
+  </insert>
+
+  <select id="getByUsername" resultType="com.myself.study.entity.SysUser">
+    select * from sys_user where user_name=#{userName}
+  </select>
+
+  <select id="getPermissions" resultType="java.lang.String">
+    SELECT
+	m.permission
+FROM
+	sys_user su
+	LEFT JOIN user_role ur ON ur.user_id = su.id
+	LEFT JOIN role_menu rm ON rm.role_id = ur.role_id
+	LEFT JOIN menu m ON m.id = rm.menu_id
+<where>
+  1=1
+  <if test="userName!=null and userName!=''">
+    and su.user_name =#{userName}
+  </if>
+</where>
+  </select>
+
+  <select id="getRoles" resultType="java.lang.String">
+   SELECT
+	sr.role_name
+FROM
+	sys_user su
+	LEFT JOIN user_role ur ON su.id = ur.user_id
+	LEFT JOIN sys_role sr ON sr.id = ur.role_id
+<where>
+1=1
+  <if test="userName!=null and userName!=''">
+   and su.user_name = #{userName}
+  </if>
+</where>
+  </select>
+</mapper>
